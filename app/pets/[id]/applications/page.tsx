@@ -8,7 +8,7 @@ import ManageApplicationButtons from "@/components/ManageApplicationButtons";
 export const dynamic = "force-dynamic";
 
 /* ───────────── Server action: approve / reject / pending ───────────── */
-export async function updateApplicationStatus(formData: FormData) {
+async function updateApplicationStatus(formData: FormData) {
   "use server";
 
   const supabase = getSupabaseServerClient();
@@ -122,7 +122,9 @@ export default async function ManagePetApplicationsPage({
           <h1 className="text-2xl font-semibold">
             Applications for {pet.name}
           </h1>
-          <p className="text-gray-600">Approve, reject, or cancel an approval.</p>
+          <p className="text-gray-600">
+            Approve, reject, or cancel an approval.
+          </p>
         </div>
 
         <Link
@@ -188,8 +190,7 @@ export default async function ManagePetApplicationsPage({
             const notes = stripAttachmentLines(rawNotes);
 
             const applicantId = getApplicantId(a);
-            const applicantDisplay =
-              fullName ?? applicantId ?? "unknown";
+            const applicantDisplay = fullName ?? applicantId ?? "unknown";
 
             const rejectedAtIso: string | undefined =
               a.rejected_at || a.rejectedAt;
