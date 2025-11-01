@@ -1,0 +1,536 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 1rem;
+}
+
+body {
+  @apply bg-white text-gray-900;
+}
+.container-xl {
+  @apply max-w-7xl mx-auto px-4;
+}
+.card {
+  @apply rounded-2xl shadow-lg bg-white;
+}
+.btn {
+  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-medium transition active:scale-[.98];
+}
+.btn-primary {
+  @apply btn bg-brand-600 text-white hover:bg-brand-700;
+}
+.btn-outline {
+  @apply btn border border-gray-300 hover:bg-gray-50;
+}
+.input {
+  @apply w-full rounded-xl border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-400;
+}
+.label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+.badge {
+  @apply inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700;
+}
+.grid-cards {
+  @apply grid gap-6 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeUp { animation: fadeUp 0.8s ease forwards; opacity: 0; }
+
+@keyframes float {
+  0%,100% { transform: translateY(0) }
+  50% { transform: translateY(-12px) }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+.shine:before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.3) 40%, transparent 80%);
+  transform: translateX(-120%);
+  transition: transform .6s ease;
+  border-radius: inherit;
+}
+.shine:hover:before { transform: translateX(120%); }
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* subtle animations for marquee and floating elements */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 22s linear infinite;
+  width: max-content; /* keeps it flowing */
+}
+
+/*style*/
+
+/* === BackgroundFX utilities === */
+@keyframes float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-14px); }
+  100% { transform: translateY(0px); }
+}
+@keyframes float-slower {
+  0%   { transform: translateY(0px) translateX(0); }
+  50%  { transform: translateY(-10px) translateX(6px); }
+  100% { transform: translateY(0px) translateX(0); }
+}
+@keyframes slow-spin {
+  from { transform: rotate(0deg) scale(1.02); }
+  to   { transform: rotate(360deg) scale(1.02); }
+}
+@keyframes paws-pan {
+  from { background-position: 0 0; }
+  to   { background-position: 900px 420px; }
+}
+
+.animate-float        { animation: float 8s ease-in-out infinite; }
+.animate-float-slower { animation: float-slower 12s ease-in-out infinite; }
+.animate-slow-spin    { animation: slow-spin 60s linear infinite; }
+.animate-paws-pan     { animation: paws-pan 85s linear infinite; }
+
+/* subtle grid */
+.pattern-grid {
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.06) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: top left;
+}
+
+/* ultra-light noise */
+.noise {
+  background-image: radial-gradient(rgba(0,0,0,.45) 1px, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+}
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   DARK MODE — Single Source of Truth
+   ========================================================= */
+
+/* Tailwind's dark class lives on <html class="dark">.
+   We also support body.dark for safety, but prefer html.dark. */
+html.dark, body.dark { color-scheme: dark; }
+
+/* --------- Theme tokens (only used in .dark) --------- */
+@layer base {
+  .dark {
+    --pp-bg:        #0b1020;               /* page background */
+    --pp-surface:   rgba(16, 20, 32, .88);  /* panels / sheets (glass) */
+    --pp-card:      rgba(18, 22, 36, .88);  /* cards */
+    --pp-elev:      rgba(24, 30, 48, .92);  /* elevated */
+    --pp-hair:      rgba(255,255,255,.14);  /* borders / hairlines */
+    --pp-text:      #eef2ff;               /* headings/labels */
+    --pp-muted:     rgba(242,245,255,.92);  /* body text */
+    --pp-subtle:    rgba(230,234,255,.78);  /* secondary text */
+    --pp-input:     rgba(15, 18, 30, .92);  /* input bg */
+    --pp-ring:      rgba(139, 92, 246, .55);/* focus ring */
+    --pp-chip:      rgba(255,255,255,.07);  /* chips/pills */
+  }
+
+  /* Base page */
+  .dark body { background: var(--pp-bg); color: var(--pp-muted); }
+
+  /* Headings & text */
+  .dark h1,.dark h2,.dark h3,.dark h4 { color: var(--pp-text); }
+  .dark p,.dark li,.dark small { color: var(--pp-muted); }
+  .dark .text-gray-900,.dark .text-gray-800,.dark .text-gray-700,
+  .dark .text-muted { color: var(--pp-subtle) !important; }
+
+  /* ---------------- Panels / cards / toolbars ---------------- */
+  /* Anything that looked like a white shell gets glass parity */
+  .dark .page-header,
+  .dark .filter-bar,
+  .dark .search-toolbar,
+  .dark .glass,
+  .dark .panel,
+  .dark .rounded-3xl,
+  .dark .rounded-2xl,
+  .dark .rounded-xl,
+  .dark [class*="bg-white/"] {
+    background:
+      radial-gradient(900px 360px at 85% 8%, rgba(16,180,120,.07), transparent 60%),
+      radial-gradient(900px 360px at 12% 92%, rgba(139,92,246,.10), transparent 65%),
+      var(--pp-surface) !important;
+    border-color: var(--pp-hair) !important;
+    color: var(--pp-muted);
+    backdrop-filter: blur(12px);
+  }
+
+  .dark .card,
+  .dark .list-card,
+  .dark .dashboard-card,
+  .dark .bg-white,
+  .dark .bg-white\/85,
+  .dark .bg-white\/80,
+  .dark .bg-white\/70 {
+    background: var(--pp-card) !important;
+    border-color: var(--pp-hair) !important;
+    color: var(--pp-muted);
+  }
+
+  /* Pills / chips / tabs / outline-y UI */
+  .dark .pill,
+  .dark .chip,
+  .dark .trust-pill,
+  .dark .tab,
+  .dark .tab-item,
+  .dark .status-pill,
+  .dark .rounded-full.border,
+  .dark .bg-white\/10.backdrop-blur {
+    background: var(--pp-chip) !important;
+    border-color: var(--pp-hair) !important;
+    color: var(--pp-muted);
+  }
+  .dark .pill:hover,
+  .dark .chip:hover,
+  .dark .tab:hover,
+  .dark .tab-item:hover { background: rgba(255,255,255,.10) !important; }
+
+  /* Outline / ghost actions (e.g., “Back to pet”, “Apply”) */
+  .dark a.border,
+  .dark button.border,
+  .dark .btn-ghost,
+  .dark .btn-secondary {
+    background: rgba(255,255,255,.06) !important;
+    color: var(--pp-text) !important;
+    border-color: var(--pp-hair) !important;
+  }
+  .dark a.border:hover,
+  .dark button.border:hover,
+  .dark .btn-ghost:hover,
+  .dark .btn-secondary:hover { background: rgba(255,255,255,.10) !important; }
+
+  /* Empty states */
+  .dark .empty, .dark .empty * { color: #dbe6ff !important; opacity: .95 !important; }
+
+  /* ---------------- Forms ---------------- */
+  .dark label, .dark .form-label, .dark legend { color: var(--pp-text) !important; }
+
+  .dark input:not([type="checkbox"]),
+  .dark select,
+  .dark textarea {
+    background: var(--pp-input) !important;
+    color: #f8faff !important;
+    border-color: var(--pp-hair) !important;
+  }
+  .dark input::placeholder,
+  .dark textarea::placeholder { color: rgba(226,232,255,.55) !important; }
+
+  .dark input:focus,
+  .dark select:focus,
+  .dark textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--pp-ring);
+    border-color: var(--pp-ring) !important;
+  }
+
+  /* Native select dropdown sheet */
+  .dark select option,
+  .dark optgroup {
+    background: #0b1220;  /* dark sheet */
+    color: #eef2ff;
+  }
+
+  /* Checkboxes */
+  .dark input[type="checkbox"] { accent-color: #8b5cf6; }
+
+  /* ---------------- Navbar / Buttons ---------------- */
+  .dark nav {
+    background: linear-gradient(90deg, #7c3aed, #d946ef, #9333ea);
+    box-shadow: 0 10px 30px -12px rgba(168,85,247,.45);
+  }
+  .dark .btn-shimmer {
+    background: linear-gradient(90deg, #6366f1, #d946ef, #9333ea) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 26px -10px rgba(139,92,246,.45);
+  }
+
+  /* Marquee chips */
+  .dark .marquee-chip {
+    background: var(--pp-chip) !important;
+    border-color: var(--pp-hair) !important;
+    color: var(--pp-muted);
+  }
+
+  /* Hero copy clarity */
+  .dark .hero-copy { color: #f8f9ff !important; }
+  .dark .hero-sub  { color: var(--pp-subtle) !important; }
+}
+
+/* ---------------- BackgroundFX parity (keep animation visible) ---------------- */
+@layer utilities {
+  .dark .noise { opacity:.06 !important; }
+  .dark .animate-paws-pan { opacity:.14 !important; mix-blend-mode:screen; }
+  .dark .pp-hero-glow:before {
+    content:""; position:absolute; inset:0;
+    background: radial-gradient(640px 320px at 25% 28%, rgba(139,92,246,.18), transparent 62%);
+    pointer-events:none;
+  }
+}
+
+
+
+
+
+
+/* =========================================================
+   DARK MODE — Navbar & Footer polish (final)
+   ========================================================= */
+
+/* ---------------- NAVBAR ---------------- */
+@layer base {
+  /* Bar itself (keeps your brand gradient, adds subtle depth) */
+  .dark nav {
+    background: linear-gradient(90deg, #7c3aed, #d946ef, #9333ea);
+    box-shadow:
+      0 16px 40px -18px rgba(139,92,246,.45),
+      inset 0 -1px 0 rgba(255,255,255,.12);
+  }
+
+  /* Generic pills/links inside nav (Adopt / Dashboard / Admin / Sign in) */
+  .dark nav :where(a, button).rounded-xl,
+  .dark nav :where(a, button).rounded-lg,
+  .dark nav :where(a, button).pill {
+    background: rgba(15,18,30,.36) !important; /* glassy chip */
+    color: #f7f9ff !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    box-shadow: 0 10px 24px -14px rgba(0,0,0,.55);
+    backdrop-filter: blur(10px);
+  }
+  .dark nav :where(a, button).rounded-xl:hover,
+  .dark nav :where(a, button).rounded-lg:hover,
+  .dark nav :where(a, button).pill:hover {
+    background: rgba(15,18,30,.50) !important;
+  }
+  /* Active/current item (e.g., Dashboard) */
+  .dark nav :where(a[aria-current="page"], button[aria-current="page"]).rounded-xl,
+  .dark nav :where(.is-active).rounded-xl {
+    background: rgba(15,18,30,.62) !important;
+    border-color: rgba(255,255,255,.24) !important;
+  }
+
+  /* Icon-only buttons (bell, etc.) */
+  .dark nav :where(a, button).ring-1,
+  .dark nav :where(a, button).icon,
+  .dark nav :where(button[title], a[title]).rounded-full {
+    background: rgba(15,18,30,.42) !important;
+    color: #eef2ff !important;
+    border-color: rgba(255,255,255,.22) !important;
+  }
+  .dark nav :where(a, button).ring-1:hover,
+  .dark nav :where(a, button).icon:hover {
+    background: rgba(15,18,30,.56) !important;
+  }
+
+  /* Avatar circle */
+  .dark nav .avatar,
+  .dark nav .avatar button,
+  .dark nav .avatar .rounded-full {
+    background: rgba(15,18,30,.46) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,.22) !important;
+  }
+
+  /* Avatar dropdown / user menu panel */
+  .dark nav .menu,
+  .dark nav .dropdown,
+  .dark nav [role="menu"] {
+    background: rgba(16,20,32,.95) !important;
+    color: #eaf0ff !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    box-shadow: 0 28px 64px -26px rgba(0,0,0,.65);
+    backdrop-filter: blur(12px);
+  }
+  .dark nav .menu :where(a, button) { color: #eaf0ff !important; }
+  .dark nav .menu :where(a, button):hover {
+    background: rgba(255,255,255,.07) !important;
+  }
+
+  /* Mobile sheet (your md:hidden panel) */
+  .dark nav .mobile-sheet,
+  .dark nav .mobile-menu {
+    background: rgba(16,20,32,.95) !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    color: #eaf0ff !important;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Focus rings—visible but soft */
+  .dark nav :where(a,button):focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139,92,246,.55) !important; /* matches --pp-ring */
+  }
+}
+
+/* Optional: soft separator shadow below nav */
+@layer utilities {
+  .dark .nav-shadow { box-shadow: 0 12px 28px -16px rgba(0,0,0,.55); }
+}
+
+/* ---------------- FOOTER ---------------- */
+@layer base {
+  /* Works with <footer> or .site-footer */
+  .dark footer,
+  .dark .site-footer {
+    background:
+      radial-gradient(900px 360px at 12% 10%, rgba(139,92,246,.10), transparent 60%),
+      radial-gradient(800px 320px at 88% 0%,  rgba(16,180,120,.08), transparent 60%),
+      linear-gradient(90deg, #7c3aed, #d946ef, #9333ea);
+    color: #f2f5ff;
+    border-top: 1px solid rgba(255,255,255,.16);
+    box-shadow: inset 0 18px 40px -20px rgba(139,92,246,.28);
+  }
+
+  /* Footer links */
+  .dark footer a,
+  .dark .site-footer a {
+    color: #f7f9ff;
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+  }
+  .dark footer a:hover,
+  .dark .site-footer a:hover {
+    color: #ffffff;
+    border-bottom-color: rgba(255,255,255,.35);
+  }
+
+  /* Footer chip/pill buttons */
+  .dark footer :where(a,button).rounded-xl,
+  .dark .site-footer :where(a,button).rounded-xl {
+    background: rgba(15,18,30,.38) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    color: #f7f9ff !important;
+  }
+
+  /* Make any hard black/neutral backgrounds transparent so the gradient shows */
+  .dark footer .bg-black,
+  .dark footer .bg-gray-950,
+  .dark footer .bg-neutral-950 { background-color: transparent !important; }
+}
+
+
+
+
+
+
+/* ===========================
+   HARD-DARK NAVBAR (exact tone)
+   =========================== */
+@layer base {
+  .dark nav {
+    /* deep navy, matching your screenshot */
+    background: linear-gradient(180deg, #0d1423 0%, #0a111c 100%) !important;
+    box-shadow:
+      0 16px 40px -18px rgba(0,0,0,.60),
+      inset 0 -1px 0 rgba(255,255,255,.06);
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* kill any previous dark overlay you may have added */
+  .dark nav::after { content: none !important; }
+
+  /* glassy dark pills/links inside nav */
+  .dark nav :where(a,button).rounded-xl,
+  .dark nav :where(a,button).rounded-lg,
+  .dark nav :where(a,button).pill {
+    background: rgba(255,255,255,.06) !important;
+    color: #f6f7ff !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 22px -12px rgba(0,0,0,.45);
+  }
+  .dark nav :where(a,button).rounded-xl:hover,
+  .dark nav :where(a,button).rounded-lg:hover,
+  .dark nav :where(a,button).pill:hover {
+    background: rgba(255,255,255,.10) !important;
+  }
+
+  /* icon-only buttons / bell */
+  .dark nav :where(button,a).ring-1,
+  .dark nav :where(button,a).icon {
+    background: rgba(255,255,255,.07) !important;
+    border-color: rgba(255,255,255,.12) !important;
+    color: #eef2ff !important;
+  }
+
+  /* avatar circle + dropdown */
+  .dark nav .avatar,
+  .dark nav .avatar button,
+  .dark nav .avatar .rounded-full {
+    background: rgba(255,255,255,.07) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+  }
+  .dark nav .menu,
+  .dark nav .dropdown,
+  .dark nav [role="menu"] {
+    background: rgba(10, 17, 28, .96) !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    color: #eef2ff !important;
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,.6);
+    backdrop-filter: blur(12px);
+  }
+  .dark nav .menu :where(a,button) { color:#e6eaff !important; }
+  .dark nav .menu :where(a,button):hover { background: rgba(255,255,255,.06) !important; }
+}
+
+/* Optional: match page chrome under the bar with a soft dark ridge */
+@layer utilities {
+  .dark .nav-shadow { box-shadow: 0 12px 28px -16px rgba(0,0,0,.55); }
+}
+@layer base {
+  .dark footer,
+  .dark .site-footer {
+    background: linear-gradient(180deg, #0a111c 0%, #0a111c 100%) !important;
+    color: #f1f4ff;
+    border-top: 1px solid rgba(255,255,255,.10);
+  }
+  .dark footer a { color:#f6f7ff; }
+  .dark footer a:hover { color:#fff; border-bottom:1px dashed rgba(255,255,255,.28); }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

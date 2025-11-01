@@ -1,0 +1,1 @@
+export default function Page(){return <div className='prose max-w-none'><h1>Contact</h1><p>Email us at support@pawportal.example.</p></div>}

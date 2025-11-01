@@ -1,0 +1,1 @@
+export default function Page(){return <div className='prose max-w-none'><h1>Privacy</h1><p>We respect your privacy. We only collect the information necessary to facilitate adoptions and comply with our policies. You control your data; delete your account anytime.</p></div>}

@@ -1,0 +1,140 @@
+/* ----- Force admin colors to follow theme ----- */
+
+/* Light defaults */
+.admin {
+  background-color: rgb(255 255 255); /* white */
+  color: rgb(17 24 39);               /* gray-900 */
+}
+
+/* Dark overrides */
+.dark .admin {
+  background-color: rgb(11 16 32); /* #0b1020 */
+  color: rgb(243 244 246);         /* gray-100 */
+}
+
+/* Generic fix for tables / modals */
+.admin table,
+.admin .modal,
+.admin .card,
+.admin .panel {
+  background-color: inherit;
+  color: inherit;
+  border-color: rgb(229 231 235);
+}
+
+.dark .admin table,
+.dark .admin .modal,
+.dark .admin .card,
+.dark .admin .panel {
+  background-color: rgb(17 24 39);    /* gray-900 */
+  border-color: rgb(31 41 55);        /* gray-800 */
+}
+
+/* Inputs */
+.admin input,
+.admin select,
+.admin textarea {
+  background-color: rgb(255 255 255);
+  color: rgb(17 24 39);
+  border: 1px solid rgb(229 231 235);
+}
+
+.dark .admin input,
+.dark .admin select,
+.dark .admin textarea {
+  background-color: rgb(31 41 55);
+  color: rgb(243 244 246);
+  border-color: rgb(55 65 81);
+}
+
+/* Buttons (generic) */
+.admin button {
+  background-color: rgb(243 244 246);
+  color: rgb(17 24 39);
+  border: 1px solid rgb(229 231 235);
+}
+.dark .admin button {
+  background-color: rgb(55 65 81);
+  color: rgb(243 244 246);
+  border-color: rgb(75 85 99);
+}
+
+
+
+/* ============================
+   ADMIN THEME FORCE SYNC PATCH
+   Targets modals/dialogs + inputs
+   ============================ */
+
+/* ---- LIGHT MODE (html NOT .dark) ---- */
+.admin :where([role="dialog"], .modal, .adm-modal) {
+  background-color: #ffffff !important;         /* force white panel */
+  color: #111827 !important;                    /* gray-900 */
+  border: 1px solid #e5e7eb !important;         /* gray-200 */
+  box-shadow: 0 10px 40px rgba(0,0,0,.25) !important;
+}
+
+.admin :where([role="dialog"], .modal, .adm-modal) 
+:is(input, select, textarea) {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.admin :where([role="dialog"], .modal, .adm-modal) 
+:is(input::placeholder, textarea::placeholder) {
+  color: #6b7280 !important;                    /* gray-500 */
+}
+
+.admin :where([role="dialog"], .modal, .adm-modal) button {
+  background-color: #f3f4f6 !important;         /* gray-100 */
+  color: #111827 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.admin :where([role="dialog"], .modal, .adm-modal) .btn-primary,
+.admin :where([role="dialog"], .modal, .adm-modal) button.primary {
+  background-color: #10b981 !important;         /* emerald-500 */
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+}
+
+/* ---- DARK MODE (html.dark) ---- */
+.dark .admin :where([role="dialog"], .modal, .adm-modal) {
+  background-color: #111827 !important;         /* gray-900 */
+  color: #f3f4f6 !important;                    /* gray-100 */
+  border-color: #1f2937 !important;             /* gray-800 */
+}
+
+.dark .admin :where([role="dialog"], .modal, .adm-modal) 
+:is(input, select, textarea) {
+  background-color: #1f2937 !important;         /* gray-800 */
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;             /* gray-700 */
+}
+
+.dark .admin :where([role="dialog"], .modal, .adm-modal) 
+:is(input::placeholder, textarea::placeholder) {
+  color: #9ca3af !important;                    /* gray-400 */
+}
+
+.dark .admin :where([role="dialog"], .modal, .adm-modal) button {
+  background-color: #374151 !important;         /* gray-700 */
+  color: #f3f4f6 !important;
+  border-color: #4b5563 !important;             /* gray-600 */
+}
+
+.dark .admin :where([role="dialog"], .modal, .adm-modal) .btn-primary,
+.dark .admin :where([role="dialog"], .modal, .adm-modal) button.primary {
+  background-color: #34d399 !important;         /* emerald-400 */
+  color: #0b1020 !important;                    /* dark fg */
+  border-color: #34d399 !important;
+}
+
+/* ---- Backdrop/overlay common names ---- */
+.admin :is(.modal-backdrop, .backdrop, .overlay) {
+  background-color: rgba(0,0,0,.5) !important;  /* dim page only */
+}
+
+/* Ensure modal content sits above any dimmer that might be a sibling */
+.admin :where([role="dialog"], .modal, .adm-modal) { z-index: 50 !important; }
