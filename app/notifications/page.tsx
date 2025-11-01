@@ -18,42 +18,7 @@ import type { LucideIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-/* ───────────────── Server actions ───────────────── */
-
-export async function deleteNotification(formData: FormData) {
-  "use server";
-  const supabase = getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/sign-in?next=/notifications");
-
-  const notifId = String(formData.get("notif_id") || "");
-  if (!notifId) return;
-
-  await supabase
-    .from("notifications")
-    .delete()
-    .eq("id", notifId)
-    .eq("user_id", user.id);
-
-  revalidatePath("/notifications");
-}
-
-export async function deleteAllNotifications() {
-  "use server";
-  const supabase = getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/sign-in?next=/notifications");
-
-  await supabase.from("notifications").delete().eq("user_id", user.id);
-  revalidatePath("/notifications");
-}
-
 /* ───────────────── Page ───────────────── */
-
 export default async function NotificationsPage() {
   const supabase = getSupabaseServerClient();
 
@@ -61,6 +26,40 @@ export default async function NotificationsPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/sign-in?next=/notifications");
+
+  // ✅ server action: delete single notification
+  async function deleteNotification(formData: FormData) {
+    "use server";
+    const supa = getSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supa.auth.getUser();
+    if (!user) redirect("/sign-in?next=/notifications");
+
+    const notifId = String(formData.get("notif_id") || "");
+    if (!notifId) return;
+
+    await supa
+      .from("notifications")
+      .delete()
+      .eq("id", notifId)
+      .eq("user_id", user.id);
+
+    revalidatePath("/notifications");
+  }
+
+  // ✅ server action: delete all notifications
+  async function deleteAllNotifications() {
+    "use server";
+    const supa = getSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supa.auth.getUser();
+    if (!user) redirect("/sign-in?next=/notifications");
+
+    await supa.from("notifications").delete().eq("user_id", user.id);
+    revalidatePath("/notifications");
+  }
 
   // Load notifications
   const { data: notifs, error } = await supabase
@@ -136,7 +135,12 @@ export default async function NotificationsPage() {
               </h2>
               <div className="space-y-3">
                 {items.map((n: any) => (
-                  <NotifCard key={n.id} n={n} petMap={petMap} />
+                  <NotifCard
+                    key={n.id}
+                    n={n}
+                    petMap={petMap}
+                    deleteNotification={deleteNotification}
+                  />
                 ))}
               </div>
             </section>
@@ -152,9 +156,11 @@ export default async function NotificationsPage() {
 function NotifCard({
   n,
   petMap,
+  deleteNotification,
 }: {
   n: any;
   petMap: Record<string, { name?: string | null; photo_url?: string | null }>;
+  deleteNotification: (formData: FormData) => Promise<void>;
 }) {
   const created = n.created_at ? new Date(n.created_at) : null;
   const unread = !n.read_at;
