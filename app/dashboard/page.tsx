@@ -56,8 +56,8 @@ type MyPet = {
   vaccine_proof_url?: string | null;
 };
 
-/* ───────── actions ───────── */
-export async function deletePet(formData: FormData) {
+/* ───────── actions (NOT exported – para happy si Vercel) ───────── */
+async function deletePet(formData: FormData) {
   "use server";
   const supabase = getSupabaseServerClient();
   const {
@@ -76,7 +76,7 @@ export async function deletePet(formData: FormData) {
   redirect(returnTo);
 }
 
-export async function deleteMyApplication(formData: FormData) {
+async function deleteMyApplication(formData: FormData) {
   "use server";
   const applicationId = (formData.get("application_id") || "").toString();
   if (!applicationId)
@@ -133,7 +133,7 @@ export async function deleteMyApplication(formData: FormData) {
   redirect("/dashboard?success=" + encodeURIComponent("Application removed."));
 }
 
-export async function cancelMyPendingApplication(formData: FormData) {
+async function cancelMyPendingApplication(formData: FormData) {
   "use server";
   const applicationId = (formData.get("application_id") || "").toString();
   if (!applicationId)
@@ -278,7 +278,7 @@ export default async function Dashboard({
   const ownerFullName = profile?.full_name ?? "";
   const ownerPhone = profile?.phone ?? "";
 
-  /* ───── server action: create pet ───── */
+  /* ───── server action: create pet (inside page, ok to keep) ───── */
   async function createPet(formData: FormData) {
     "use server";
     const supabase = getSupabaseServerClient();
@@ -507,11 +507,7 @@ export default async function Dashboard({
       revalidatePath("/adopt");
       revalidatePath("/dashboard");
       const ts = Date.now().toString();
-      redirect(
-        `/dashboard?success=${encodeURIComponent(
-          "Pet saved."
-        )}&ts=${ts}`
-      );
+      redirect(`/dashboard?success=${encodeURIComponent("Pet saved.")}&ts=${ts}`);
     } catch (e: any) {
       if (isRedirectError(e)) throw e;
       redirect(
@@ -533,11 +529,7 @@ export default async function Dashboard({
   return (
     <div className="space-y-8">
       {/* welcome card */}
-      <HeroHeader
-        name={firstName}
-        totals={totals}
-        credits={listingCredits}
-      />
+      <HeroHeader name={firstName} totals={totals} credits={listingCredits} />
 
       {errorMsg && <Callout tone="rose" title={decodeURIComponent(errorMsg)} />}
       {petsErr && (
