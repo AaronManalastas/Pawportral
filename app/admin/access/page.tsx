@@ -1,4 +1,4 @@
-// app/admin/reports/page.tsx
+// app/admin/access/page.tsx
 import Image from "next/image";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
@@ -39,7 +39,8 @@ type ReportRow = ReportRecord & {
 };
 
 /* ───────── Server action: update report status ───────── */
-export async function updateReportStatus(formData: FormData) {
+/*  NOTE: hindi na exported!  */
+async function updateReportStatus(formData: FormData) {
   "use server";
   const id = String(formData.get("report_id") || "");
   const status = (String(formData.get("status") || "open") as
@@ -52,11 +53,12 @@ export async function updateReportStatus(formData: FormData) {
   const supabase = getSupabaseServerClient();
   await supabase.from("user_reports").update({ status }).eq("id", id);
 
-  revalidatePath("/admin/reports");
+  revalidatePath("/admin/access");
 }
 
 /* ───────── Server action: delete a report (service role) ───────── */
-export async function deleteReport(formData: FormData) {
+/*  NOTE: hindi na exported!  */
+async function deleteReport(formData: FormData) {
   "use server";
   const id = String(formData.get("report_id") || "");
   if (!id) return;
@@ -64,7 +66,7 @@ export async function deleteReport(formData: FormData) {
   const { error } = await service.from("user_reports").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
-  revalidatePath("/admin/reports");
+  revalidatePath("/admin/access");
 }
 
 /* ───────── Page (scrollable list, no pagination) ───────── */
@@ -88,7 +90,9 @@ export default async function AdminReportsPage() {
   if (!error && total > 0) {
     const ids = Array.from(
       new Set(
-        reports.flatMap((r) => [r.reporter_user_id, r.reported_user_id]).filter(Boolean)
+        reports
+          .flatMap((r) => [r.reporter_user_id, r.reported_user_id])
+          .filter(Boolean)
       )
     );
 
@@ -200,7 +204,9 @@ export default async function AdminReportsPage() {
                         Notes
                       </div>
                       <div className="mt-1 whitespace-pre-wrap text-gray-800">
-                        {r.notes || <span className="text-gray-400">No notes added.</span>}
+                        {r.notes || (
+                          <span className="text-gray-400">No notes added.</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -240,7 +246,9 @@ function Avatar({
           unoptimized
         />
       ) : (
-        <div className="grid h-full w-full place-items-center text-gray-400">🐾</div>
+        <div className="grid h-full w-full place-items-center text-gray-400">
+          🐾
+        </div>
       )}
     </div>
   );
