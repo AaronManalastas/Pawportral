@@ -7,8 +7,6 @@ import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import NotificationCard from "@/components/NotificationCard";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
-
-
 /* ───────────── Types ───────────── */
 type NotifRow = {
   id: string;
@@ -31,7 +29,14 @@ function extractTargets(n: NotifRow) {
   const d = (n.data ?? {}) as any;
 
   const petId =
-    n.pet_id || d.pet_id || d.petId || d.pet_uuid || d.petUUID || d?.pet?.id || d?.pet?.uuid || null;
+    n.pet_id ||
+    d.pet_id ||
+    d.petId ||
+    d.pet_uuid ||
+    d.petUUID ||
+    d?.pet?.id ||
+    d?.pet?.uuid ||
+    null;
 
   const petSlug = d.pet_slug || d?.pet?.slug || d.slug || null;
 
@@ -100,7 +105,10 @@ export default function NotificationBell() {
     newestTsRef.current = list[0]?.created_at ?? null;
   }, [list]);
 
-  const unreadIds = useMemo(() => list.filter((n) => !n.read_at).map((n) => n.id), [list]);
+  const unreadIds = useMemo(
+    () => list.filter((n) => !n.read_at).map((n) => n.id),
+    [list]
+  );
 
   const derive = (n: NotifRow) => {
     const tt = tnorm(n.type);
@@ -108,12 +116,21 @@ export default function NotificationBell() {
     const d = (n.data ?? {}) as any;
 
     const petName =
-      d.pet_name || d.petName || d.name || d.title || d?.pet?.name || d?.pet?.title || pet?.name || "your pet";
+      d.pet_name ||
+      d.petName ||
+      d.name ||
+      d.title ||
+      d?.pet?.name ||
+      d?.pet?.title ||
+      pet?.name ||
+      "your pet";
 
     if (tt === "pet_removed" || (tt.includes("pet") && tt.includes("removed"))) {
       return {
         title: "Your pet was removed by an admin",
-        body: petName ? `The listing “${petName}” was removed.` : "Your pet listing was removed.",
+        body: petName
+          ? `The listing “${petName}” was removed.`
+          : "Your pet listing was removed.",
         navHref: "/my/pets",
       };
     }
@@ -138,8 +155,13 @@ export default function NotificationBell() {
         : "");
 
     const { petHref, appsHref } = extractTargets(n);
-    const isCreated = tt.includes("application.created") || tt.endsWith(".created") || tt.includes("created");
-    const navHref = isCreated ? appsHref || petHref || "/notifications" : petHref || "/notifications";
+    const isCreated =
+      tt.includes("application.created") ||
+      tt.endsWith(".created") ||
+      tt.includes("created");
+    const navHref = isCreated
+      ? appsHref || petHref || "/notifications"
+      : petHref || "/notifications";
     return { title, body, navHref };
   };
 
@@ -153,11 +175,17 @@ export default function NotificationBell() {
   };
 
   const fetchPetsFor = async (rows: NotifRow[]) => {
-    const ids = Array.from(new Set(rows.map((r) => r.pet_id).filter(Boolean) as string[]));
+    const ids = Array.from(
+      new Set(rows.map((r) => r.pet_id).filter(Boolean) as string[])
+    );
     if (ids.length === 0) return;
-    const { data } = await supabase.from("pets").select("id,name").in("id", ids);
+    const { data } = await (supabase.from("pets") as any)
+      .select("id,name")
+      .in("id", ids);
     const pets = (data ?? []) as PetLite[];
-    setPetMap((prev) => Object.assign({}, prev, ...pets.map((p) => ({ [p.id]: p }))));
+    setPetMap((prev) =>
+      Object.assign({}, prev, ...pets.map((p) => ({ [p.id]: p })))
+    );
   };
 
   const loadFirstPage = async (userId: string) => {
@@ -200,24 +228,40 @@ export default function NotificationBell() {
     setLoadingMore(false);
   };
 
+  // ✅ cast table to any para wag na magreklamo si TS
   const markReadAndSync = async (id: string) => {
-    setList((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: n.read_at ?? new Date().toISOString() } : n)));
+    setList((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, read_at: n.read_at ?? new Date().toISOString() } : n
+      )
+    );
     setCount((c) => Math.max(0, c - 1));
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    await (supabase.from("notifications") as any)
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", id);
     if (uidRef.current) await refreshCount(uidRef.current);
   };
 
+  // ✅ same cast
   const markAllRead = async () => {
     if (!uid) return;
-    setList((prev) => prev.map((n) => (n.read_at ? n : { ...n, read_at: new Date().toISOString() })));
+    setList((prev) =>
+      prev.map((n) =>
+        n.read_at ? n : { ...n, read_at: new Date().toISOString() }
+      )
+    );
     setCount(0);
-    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("user_id", uid).is("read_at", null);
+    await (supabase.from("notifications") as any)
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", uid)
+      .is("read_at", null);
     await refreshCount(uid);
   };
 
+  // ✅ same cast
   const dismiss = async (id: string) => {
     setList((prev) => prev.filter((n) => n.id !== id));
-    await supabase.from("notifications").delete().eq("id", id);
+    await (supabase.from("notifications") as any).delete().eq("id", id);
     if (uid) await refreshCount(uid);
   };
 
@@ -256,14 +300,24 @@ export default function NotificationBell() {
         .channel(`notif-dd-${userId}`)
         .on(
           "postgres_changes",
-          { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userId}`,
+          },
           (payload: RealtimePostgresChangesPayload<NotifRow>) => {
             const row = payload.new as NotifRow;
-            setList((prev) => (prev.some((p) => p.id === row.id) ? prev : [row, ...prev]));
+            setList((prev) =>
+              prev.some((p) => p.id === row.id) ? prev : [row, ...prev]
+            );
             void refreshCount(userId);
             if (row?.pet_id && !petMap[row.pet_id]) {
               void (async () => {
-                const { data: pets } = await supabase.from("pets").select("id,name").eq("id", row.pet_id).limit(1);
+                const { data: pets } = await (supabase.from("pets") as any)
+                  .select("id,name")
+                  .eq("id", row.pet_id)
+                  .limit(1);
                 const p = (pets ?? [])[0] as PetLite | undefined;
                 if (p) setPetMap((prev) => ({ ...prev, [p.id]: p }));
               })();
@@ -272,12 +326,14 @@ export default function NotificationBell() {
         )
         .on(
           "postgres_changes",
-          { event: "UPDATE", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userId}`,
+          },
           (payload: RealtimePostgresChangesPayload<NotifRow>) => {
             const row = payload.new as NotifRow;
-
-            // 🔥 important: if this UPDATE is the first time the row matches our user_id,
-            // it won't be in memory yet. Insert when missing; otherwise update.
             setList((prev) => {
               const idx = prev.findIndex((p) => p.id === row.id);
               if (idx === -1) return [row, ...prev];
@@ -285,13 +341,17 @@ export default function NotificationBell() {
               copy[idx] = { ...copy[idx], ...row };
               return copy;
             });
-
             void refreshCount(userId);
           }
         )
         .on(
           "postgres_changes",
-          { event: "DELETE", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${userId}`,
+          },
           (payload: RealtimePostgresChangesPayload<NotifRow>) => {
             const old = payload.old as NotifRow;
             setList((prev) => prev.filter((p) => p.id !== old.id));
@@ -300,7 +360,7 @@ export default function NotificationBell() {
         )
         .subscribe();
 
-      // Fallback tiny poll (covers cases where Realtime is blocked)
+      // Fallback tiny poll
       pollTimerRef.current = window.setInterval(async () => {
         if (!uidRef.current) return;
         const newest = newestTsRef.current;
@@ -324,7 +384,7 @@ export default function NotificationBell() {
           await refreshCount(uidRef.current);
           await fetchPetsFor(rows);
         }
-      }, 4000); // a bit snappier
+      }, 4000);
     };
 
     void setup();
@@ -351,7 +411,7 @@ export default function NotificationBell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase]);
 
-  // keep badge in sync after navigation (avoid racing our own click)
+  // keep badge in sync after navigation
   useEffect(() => {
     if (!uid) return;
     if (skipNextPathRefresh.current) {
@@ -389,10 +449,13 @@ export default function NotificationBell() {
     }
   };
 
-  // Prefetch likely targets when dropdown opens
+  // Prefetch when open
   useEffect(() => {
     if (!open) return;
-    const hrefs = list.slice(0, 6).map((n) => derive(n).navHref).filter(Boolean) as string[];
+    const hrefs = list
+      .slice(0, 6)
+      .map((n) => derive(n).navHref)
+      .filter(Boolean) as string[];
     hrefs.forEach((h) => router.prefetch(h));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, list.length]);
@@ -443,7 +506,9 @@ export default function NotificationBell() {
                 ))}
               </div>
             ) : list.length === 0 ? (
-              <div className="px-4 py-10 text-center text-sm text-gray-500">No notifications yet.</div>
+              <div className="px-4 py-10 text-center text-sm text-gray-500">
+                No notifications yet.
+              </div>
             ) : (
               <div className="space-y-3">
                 {Sectioned.map(([dateLabel, items]) => (
