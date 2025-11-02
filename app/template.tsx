@@ -1,16 +1,31 @@
 // app/template.tsx
-"use client";
+import { getSupabaseServerClient } from "@/lib/supabaseServer";
+import AuthHydrator from "@/components/AuthHydrator";
 
-import { Suspense } from "react";
-
-export default function RootTemplate({
+export default async function RootTemplate({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // kunin natin yung totoong user na nakikita ng server
+  const supabase = getSupabaseServerClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   return (
-    <Suspense fallback={null}>
+    <>
+      <AuthHydrator
+        serverUserId={user?.id ?? null}
+        accessToken={session?.access_token ?? null}
+        refreshToken={session?.refresh_token ?? null}
+      />
       {children}
-    </Suspense>
+    </>
   );
 }
