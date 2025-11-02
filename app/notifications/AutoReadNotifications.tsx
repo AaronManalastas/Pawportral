@@ -5,23 +5,25 @@ import { useEffect } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 
 export default function AutoReadNotifications() {
-  const supabase = getSupabaseBrowserClient();
-
   useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+
     (async () => {
-      const { data } = await supabase.auth.getUser();
-      const user = data?.user;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) return;
 
       // mark all unread as read
-      await supabase
+      await (supabase as any)
         .from("notifications")
-        .update({ read_at: new Date().toISOString() })
+        .update({ read_at: new Date().toISOString() } as any)
         .is("read_at", null)
         .eq("user_id", user.id);
       // NotificationBell listens to updates and will recompute automatically.
     })();
-  }, [supabase]);
+  }, []); // walang dep para di mag-loop
 
   return null;
 }
